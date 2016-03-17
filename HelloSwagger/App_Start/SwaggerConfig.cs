@@ -12,7 +12,7 @@ namespace HelloSwagger
         public static void Register()
         {
             var thisAssembly = typeof(SwaggerConfig).Assembly;
-
+            //abcd
             GlobalConfiguration.Configuration 
                 .EnableSwagger(c =>
                     {
