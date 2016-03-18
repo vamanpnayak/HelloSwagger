@@ -29,7 +29,7 @@ namespace HelloSwagger.Controllers
             /// </summary>
             /// <remarks>Get an array of all students</remarks>
             /// <response code="500">Internal Server Error</response>
-            [Route("")]
+            [Route("{apiVersion:regex(v2)}")]
             [ResponseType(typeof(List<Student>))]
             public IHttpActionResult Get()
             {
@@ -65,7 +65,7 @@ namespace HelloSwagger.Controllers
             /// <remarks>Insert new student</remarks>
             /// <response code="400">Bad request</response>
             /// <response code="500">Internal Server Error</response>
-            [Route("")]
+            [Route("{apiVersion:regex(v2)}")]
             [ResponseType(typeof(Student))]
             public IHttpActionResult Post(Student student)
             {

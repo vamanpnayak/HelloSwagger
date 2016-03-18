@@ -24,7 +24,7 @@ namespace HelloSwagger.Models
         /// <summary>
         /// Last Name (Surname)
         /// </summary>
-        [Required]
+        //[Required]
         public string LastName { get; set; }
         /// <summary>
         /// Email
