@@ -46,9 +46,9 @@ namespace HelloSwagger
                             (apiDesc, targetApiVersion) => ResolveVersionSupportByRouteConstraint(apiDesc, targetApiVersion),
                             (vc) =>
                             {
-                                vc.Version("v2", "Student - vaman");
-                                vc.Version("v1", "Account - vaman");
-                                vc.Version("v3", "Values - Vaman");
+                                vc.Version("v1", "Student - version 1");
+                                vc.Version("v2", "Student - version 2");
+                                vc.Version("v3", "Values - version 1");
                             });
 
                         // You can use "BasicAuth", "ApiKey" or "OAuth2" options to describe security schemes for the API.

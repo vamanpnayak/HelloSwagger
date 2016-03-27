@@ -35,5 +35,10 @@ namespace HelloSwagger.Models
         /// </summary>
         public DateTime? DateOfBirth { get; set; }
 
+        /// <summary>
+        /// Age
+        /// </summary>
+        public int? Age { get; set; }
+
     }
 }

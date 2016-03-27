@@ -2,14 +2,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Data.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 
-namespace HelloSwagger.Controllers
-{ 
-        [RoutePrefix("api/Students")]
+namespace HelloSwagger.Controllers.v1
+{
+        [RoutePrefix("api/{apiVersion:regex(v1)}/Students" )]      
         public class StudentsController : ApiController
         {
 
@@ -29,12 +30,14 @@ namespace HelloSwagger.Controllers
             /// </summary>
             /// <remarks>Get an array of all students</remarks>
             /// <response code="500">Internal Server Error</response>
-            [Route("{apiVersion:regex(v2)}")]
+            [Route("")]
             [ResponseType(typeof(List<Student>))]
             public IHttpActionResult Get()
             {
                 return Ok(StudentsList);
             }
+
+           
 
             /// <summary>
             /// Get student
@@ -65,7 +68,7 @@ namespace HelloSwagger.Controllers
             /// <remarks>Insert new student</remarks>
             /// <response code="400">Bad request</response>
             /// <response code="500">Internal Server Error</response>
-            [Route("{apiVersion:regex(v2)}")]
+            [Route("")]
             [ResponseType(typeof(Student))]
             public IHttpActionResult Post(Student student)
             {
