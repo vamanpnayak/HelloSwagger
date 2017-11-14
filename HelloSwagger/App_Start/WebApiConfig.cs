@@ -27,6 +27,14 @@ namespace HelloSwagger
                 defaults: new { id = RouteParameter.Optional }
             );
 
+            //config.Routes.MapHttpRoute(
+            //name: "help_ui_shortcut",
+            //routeTemplate: "help",
+            //defaults: null,
+            //constraints: null,
+            //handler: new RedirectHandler(SwaggerDocsConfig.DefaultRootUrlResolver, "documentation/index"));
+
+            //config.Services.Replace(typeof(IHttpControllerSelector), new ControllerSelector(config));
             
             //config.EnableSwagger(c => c.SingleApiVersion("v1", "A title for your API")).EnableSwaggerUi();
         }

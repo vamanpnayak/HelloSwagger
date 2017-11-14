@@ -7,10 +7,11 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
+using Swashbuckle.Swagger.Annotations;
 
 namespace HelloSwagger.Controllers.v1
 {
-        [RoutePrefix("api/{apiVersion:regex(v1)}/Students" )]      
+        [RoutePrefix("api/{apiVersion:regex(v1)}/Students" )]
         public class StudentsController : ApiController
         {
 
@@ -32,6 +33,9 @@ namespace HelloSwagger.Controllers.v1
             /// <response code="500">Internal Server Error</response>
             [Route("")]
             [ResponseType(typeof(List<Student>))]
+            [SwaggerResponse(HttpStatusCode.OK, Type=typeof(List<Student>))]
+            [SwaggerResponse(HttpStatusCode.BadRequest, Type = typeof(List<Student>))]
+            [Authorize]
             public IHttpActionResult Get()
             {
                 return Ok(StudentsList);
@@ -48,6 +52,7 @@ namespace HelloSwagger.Controllers.v1
             /// <response code="500">Internal Server Error</response>
             [Route("{userName:alpha}", Name = "GetStudentByUserName")]
             [ResponseType(typeof(Student))]
+            [SwaggerOperation(Tags = new[] { "StudentWithNewName" })]
             public IHttpActionResult Get(string userName)
             {
 

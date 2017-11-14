@@ -5,6 +5,10 @@ using Swashbuckle.Application;
 using Swashbuckle;
 using System.Web.Http.Routing.Constraints;
 using System.Linq;
+using System.Configuration;
+using Swashbuckle.Swagger;
+using System.Web.Http.Description;
+using System.Collections.Generic;
 
 [assembly: PreApplicationStartMethod(typeof(SwaggerConfig), "Register")]
 
@@ -24,7 +28,7 @@ namespace HelloSwagger
                         // resolve correctly. You can workaround this by providing your own code to determine the root URL.
                         //
                         //c.RootUrl(req => GetRootUrlFromAppConfig());
-
+                       // c.RootUrl(req => GetRootUrlFromAppConfig());
                         // If schemes are not explicitly provided in a Swagger 2.0 document, then the scheme used to access
                         // the docs is taken as the default. If your API supports multiple schemes and you want to be explicit
                         // about them, you can use the "Schemes" option as shown below.
@@ -67,15 +71,16 @@ namespace HelloSwagger
                         //    .In("header");
                         //
                         //c.OAuth2("oauth2")
-                        //    .Description("OAuth2 Implicit Grant")
-                        //    .Flow("implicit")
-                        //    .AuthorizationUrl("http://petstore.swagger.wordnik.com/api/oauth/dialog")
+                        //   .Description("OAuth2 Implicit Grant")
+                        //   .Flow("implicit")
+                        //   .AuthorizationUrl("http://petstore.swagger.wordnik.com/api/oauth/dialog")
                         //    //.TokenUrl("https://tempuri.org/token")
-                        //    .Scopes(scopes =>
-                        //    {
-                        //        scopes.Add("read", "Read access to protected resources");
-                        //        scopes.Add("write", "Write access to protected resources");
-                        //    });
+                        //   .Scopes(scopes =>
+                        //   {
+                        //       scopes.Add("read", "Read access to protected resources");
+                        //       //scopes.Add("write", "Write access to protected resources");
+                        //   });
+                        //c.OperationFilter<AssignOAuth2SecurityRequirements>();
 
                         // Set this flag to omit descriptions for any actions decorated with the Obsolete attribute
                         //c.IgnoreObsoleteActions();
@@ -176,13 +181,13 @@ namespace HelloSwagger
                         //
                         //c.CustomProvider((defaultProvider) => new CachingSwaggerProvider(defaultProvider));
                     })
-                .EnableSwaggerUi(c =>
+                .EnableSwaggerUi("documentation/{*assetPath}", c =>
                     {
                         // Use the "InjectStylesheet" option to enrich the UI with one or more additional CSS stylesheets.
                         // The file must be included in your project as an "Embedded Resource", and then the resource's
                         // "Logical Name" is passed to the method as shown below.
                         //
-                        //c.InjectStylesheet(containingAssembly, "Swashbuckle.Dummy.SwaggerExtensions.testStyles1.css");
+                        c.InjectStylesheet(thisAssembly, "HelloSwagger.SwaggerExtensions.swagger.css");
 
                         // Use the "InjectJavaScript" option to invoke one or more custom JavaScripts after the swagger-ui
                         // has loaded. The file must be included in your project as an "Embedded Resource", and then the resource's
@@ -214,7 +219,9 @@ namespace HelloSwagger
                         // in your project as an "Embedded Resource", and then the resource's "Logical Name" is passed to
                         // the method as shown below.
                         //
-                        //c.CustomAsset("index", containingAssembly, "YourWebApiProject.SwaggerExtensions.index.html");
+
+                        //c.CustomAsset("index", thisAssembly, "HelloSwagger.SwaggerExtensions.index.html");
+                        c.CustomAsset("index", thisAssembly, "HelloSwagger.SwaggerExtensions.index.html");
 
                         // If your API has multiple versions and you've applied the MultipleApiVersions setting
                         // as described above, you can also enable a select box in the swagger-ui, that displays
@@ -226,10 +233,14 @@ namespace HelloSwagger
                         // If your API supports the OAuth2 Implicit flow, and you've described it correctly, according to
                         // the Swagger 2.0 specification, you can enable UI support as shown below.
                         //
-                        //c.EnableOAuth2Support("test-client-id", "test-realm", "Swagger UI");
+                        c.EnableOAuth2Support("test-client-id", "test-realm", "Swagger UI");
                     });
         }
 
+        private static string GetRootUrlFromAppConfig()
+        {
+            return ConfigurationManager.AppSettings["GlobalWallet.Swagger.RootUrl"];
+        }
         private static bool ResolveVersionSupportByRouteConstraint(System.Web.Http.Description.ApiDescription apiDesc, string targetApiVersion)
         {
             var versionConstraint = (apiDesc.Route.Constraints.ContainsKey("apiVersion"))
@@ -239,6 +250,32 @@ namespace HelloSwagger
             return (versionConstraint == null)
                 ? false
                 : versionConstraint.Pattern.Split('|').Contains(targetApiVersion);
+        }
+
+        public class AssignOAuth2SecurityRequirements : IOperationFilter
+        {
+            public void Apply(Operation operation, SchemaRegistry schemaRegistry, ApiDescription apiDescription)
+            {
+                // Correspond each "Authorize" role to an oauth2 scope
+                var scopes = apiDescription.ActionDescriptor.GetFilterPipeline()
+                    .Select(filterInfo => filterInfo.Instance)
+                    .OfType<AuthorizeAttribute>()
+                    .SelectMany(attr => attr.Roles.Split(','))
+                    .Distinct();
+
+                if (scopes.Any())
+                {
+                    if (operation.security == null)
+                        operation.security = new List<IDictionary<string, IEnumerable<string>>>();
+
+                    var oAuthRequirements = new Dictionary<string, IEnumerable<string>>
+                {
+                    { "oauth2", scopes }
+                };
+
+                    operation.security.Add(oAuthRequirements);
+                }
+            }
         }
     }
 }

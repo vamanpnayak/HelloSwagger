@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
+using Swashbuckle.Swagger.Annotations;
 
 namespace HelloSwagger.Controllers.v2
 {
@@ -32,6 +33,7 @@ namespace HelloSwagger.Controllers.v2
             /// <response code="500">Internal Server Error</response>
             [Route("")]
             [ResponseType(typeof(List<Student>))]
+            [SwaggerOperation(Tags = new[] { "Test" })]
             public IHttpActionResult Get()
             {
                 return Ok(StudentsList);
